@@ -1,0 +1,155 @@
+import sys
+from math import sqrt
+import math
+
+
+filename = sys.argv[1]
+sequence = open(filename)
+items = list[list[str]]()
+allItems=list[str]()
+
+
+
+def statistics(count, lamda):
+	statistic = 0.0
+	if count>=1:
+		countVar = int(math.floor(count))
+		for i in range(countVar):
+			flpoint = float(i) + 1.0
+			statistic = statistic + math.exp(i*math.log(lamda)- math.lgamma(flpoint)-lamda)
+		if(statistic<0):
+			statistic=0.0
+	else:
+		statistic = 1.0
+	return statistic
+
+def theMean(listOfVals):
+	sum = 0.0
+	number = 12
+	for i in range(number):
+		sum = sum + listOfVals[i]
+	mean = sum/13.0
+	return mean
+
+def variance(values, mean):
+	sum = 0.0
+	number = 12
+	for i in range(number):
+		difference = values[i]-mean
+		sd= math.pow(difference, 2.0)
+		sum = sum + float(sd)
+	variance = sum/number
+	return variance
+
+def standardDeviation(variance):
+	stdev = math.sqrt(variance)
+	return stdev
+		
+
+for line in sequence:
+	newList = list[str]()
+	data = line.replace("\n", ":")
+	data = line.replace("\t", ":")
+	newList = data.split(":")
+	addedList = list[str]()
+	x=0
+	
+	Alist = list[float]()
+	Clist = list[float]()
+	Glist = list[float]()
+	Tlist = list[float]()
+	
+	readcount = 0.0
+	for i in newList:
+		if x==0:
+			addedList.append(i)
+		if x==1:
+			addedList.append(i)
+			readcount = float(i)
+		if x==2:
+			word = 'mixture_5-95'
+			addedList.append(word)
+			addedList.append(i)
+		if x==3:
+			addedList.append(i)	
+		
+		if x>=19 and x<=31:
+			Alist.append(float(i))
+		if x>=33 and x<=45:
+			Clist.append(float(i))
+		if x>=47 and x<=59:
+			Glist.append(float(i))
+		if x>=61 and x<=73:
+			Tlist.append(float(i))
+		x=x+1
+	highestVarA = 0.0
+	highestVarC = 0.0
+	highestVarG = 0.0
+	highestVarT = 0.0
+	indicator = 0
+	
+	for i in Alist:
+		if i>highestVarA:
+			highestVarA = i
+	for i in Clist:
+		if i>highestVarC:
+			highestVarC = i
+	for i in Glist:
+		if i>highestVarG:
+			highestVarG = i
+	for i in Tlist:
+		if i>highestVarT:
+			highestVarT = i
+	
+	r = 0.1
+	lamda = 13.0*r
+	count = highestVarT
+	pval = statistics(count, lamda)
+	confscore = 10 * math.log(pval)
+	addedList.append(str("T"))
+	addedList.append(str(highestVarT))
+
+	mutation = 1
+	if(mutation ==1):
+		meanVal = theMean(Tlist)
+		
+		addedList.append(str(meanVal))
+		varianceVal = variance(Tlist,meanVal)
+		standardDeviationVal = int(standardDeviation(varianceVal))
+		addedList.append("+:" + str(standardDeviationVal))
+	
+	"""
+	if indicator == 0:
+		addedList.append("A")
+	elif indicator == 1:
+		addedList.append("C")
+	elif indicator == 2:
+		addedList.append("G")
+	elif indicator == 3:
+		addedList.append("T")
+	"""
+	#if(confscore<0):
+	items.append(addedList)
+
+
+f = open("outputfile.txt","w+")
+for i in items:
+	text = '   '.join([str(x) for x in i])
+	f.write(text)
+	f.write("\n")
+f.close()
+
+
+
+"""
+for i in items:
+	if i[1] == '66950331':
+		print "found 66950331"
+		for x in i:
+			print x
+"""
+
+
+
+
+
